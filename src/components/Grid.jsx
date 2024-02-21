@@ -25,8 +25,12 @@ function Grid({
   return (
     <div
       className={"grid " + classNameHelper()}
-      onMouseEnter={() => handleMouseEnter(x, y, z)}
-      onMouseLeave={() => handleMouseLeave(x, y, z)}
+      onMouseEnter={() =>
+        handleMouseEnter({ x: x, y: y, z: z, isHovered: true })
+      }
+      onMouseLeave={() =>
+        handleMouseLeave({ x: x, y: y, z: z, isHovered: false })
+      }
     />
   );
 }

@@ -5,42 +5,20 @@ import Grid from "./Grid";
 function Canvas() {
   const { flameLevel, blockTool } = useCanvasContext();
   const [canvas, setCanvas] = useState([]);
-  
-  function handleMouseEnter(x, y, z) {
-    setCanvas(prevCanvas => {
-      let newCanvas = [...prevCanvas];
-      if (blockTool.direction === "x") {
-        for (let i = 0; i < blockTool.size; i++) {
-          if (x + i < newCanvas[y].length) {
-            newCanvas[y][x + i].isHovered = true;
-          }
-        }
-      } else if (blockTool.direction === "y") {
-        for (let i = 0; i < blockTool.size; i++) {
-          if (y + i < newCanvas.length) {
-            newCanvas[y + i][x].isHovered = true;
-          }
-        }
-      }
-        
-      return newCanvas;
-    });
-  }
 
-  function handleMouseLeave(x, y, z) {
-    setCanvas(prevCanvas => {
+  function handleHoverGrid({ x, y, z, isHovered }) {
+    setCanvas((prevCanvas) => {
       let newCanvas = [...prevCanvas];
+      const maxX = Math.min(x + blockTool.size, newCanvas[y].length);
+      const maxY = Math.min(y + blockTool.size, newCanvas.length);
+
       if (blockTool.direction === "x") {
-        for (let i = 0; i < blockTool.size; i++) {
-          if (x + i < newCanvas[y].length) {
-            newCanvas[y][x + i].isHovered = false;
-          }  
+        for (let i = x; i < maxX; i++) {
+          newCanvas[y][i].isHovered = isHovered;
         }
       } else if (blockTool.direction === "y") {
-        for (let i = 0; i < blockTool.size; i++) {
-          if (y + i < newCanvas.length) {
-            newCanvas[y + i][x].isHovered = false;
-          }
+        for (let i = y; i < maxY; i++) {
+          newCanvas[i][x].isHovered = isHovered;
         }
       }
       return newCanvas;
@@ -51,10 +29,10 @@ function Canvas() {
     (function drawCanvas() {
       const z = 0;
       let newCanvas = [];
-  
+
       for (let y = 0; y < flameLevel * 40; y++) {
         let row = [];
-  
+
         for (let x = 0; x < flameLevel * 40; x++) {
           row.push({
             x: x,
@@ -68,7 +46,7 @@ function Canvas() {
         newCanvas.push(row);
       }
       setCanvas(newCanvas);
-    })()
+    })();
   }, [flameLevel]);
 
   const renderCanvas = canvas.map((row, i) => (
@@ -82,16 +60,14 @@ function Canvas() {
           isOccupied={isOccupied}
           isSnapPoint={isSnapPoint}
           isHovered={isHovered}
-          handleMouseEnter={handleMouseEnter}
-          handleMouseLeave={handleMouseLeave}
+          handleMouseEnter={handleHoverGrid}
+          handleMouseLeave={handleHoverGrid}
         />
       ))}
     </div>
   ));
 
-  return (
-    <div id="canvas">{renderCanvas}</div>
-  );
+  return <div id="canvas">{renderCanvas}</div>;
 }
 
 export default Canvas;
