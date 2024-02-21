@@ -11,25 +11,23 @@ function Grid({
   function classNameHelper() {
     if (isHovered) {
       if (isOccupied) {
-        return "grid conflict";
+        return "conflict";
       } else {
-        return "grid hovered";
+        return "hovered";
       }
     } else if (isOccupied) {
-      return "grid occupied";
+      return "occupied";
     } else {
-      return "grid blank";
+      return "blank";
     }
   }
 
   return (
     <div
-      className={classNameHelper()}
+      className={"grid " + classNameHelper()}
       onMouseEnter={() => handleMouseEnter(x, y, z)}
       onMouseLeave={() => handleMouseLeave(x, y, z)}
-    >
-      {/* {isHovered ? "2" : isOccupied ? "1" : "0"} */}
-    </div>
+    />
   );
 }
 
