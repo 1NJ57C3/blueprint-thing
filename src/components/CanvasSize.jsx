@@ -11,6 +11,7 @@ function CanvasSize() {
       <p>Height: {basicDimensions.height * flameLevel}</p>
       <label htmlFor="flame-level">Flame Level: &nbsp;</label>
       <select
+        id="flame-level"
         name="flame-level"
         value={flameLevel}
         onChange={(e) => setFlameLevel(e.target.value)}
