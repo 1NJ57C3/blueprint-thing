@@ -1,6 +1,6 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useState } from "react";
 
-const CanvasContext = createContext(null);
+export const CanvasContext = createContext(null);
 
 export function CanvasProvider({ children }) {
   const [flameLevel, setFlameLevel] = useState(1);
@@ -11,14 +11,4 @@ export function CanvasProvider({ children }) {
       {children}
     </CanvasContext.Provider>
   );
-}
-
-export function useCanvasContext() {
-  const context = useContext(CanvasContext);
-
-  if (!context) {
-    throw new Error("CanvasContext Provider not found!");
-  }
-
-  return context;
 }

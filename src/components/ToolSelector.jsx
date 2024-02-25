@@ -1,4 +1,4 @@
-import { useCanvasContext } from "../contexts/canvasContext";
+import { useCanvasContext } from "../hooks/useCanvasContext";
 import RadioButton from "./RadioButton";
 
 function ToolSelector() {

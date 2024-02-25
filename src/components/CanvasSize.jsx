@@ -1,4 +1,4 @@
-import { useCanvasContext } from "../contexts/canvasContext";
+import { useCanvasContext } from "../hooks/useCanvasContext";
 
 function CanvasSize() {
   const { flameLevel, setFlameLevel } = useCanvasContext();

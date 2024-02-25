@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useCanvasContext } from "../contexts/canvasContext";
+import { useCanvasContext } from "../hooks/useCanvasContext";
 import Grid from "./Grid";
 
 function Canvas() {
