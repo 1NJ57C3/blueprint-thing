@@ -6,7 +6,7 @@ function Canvas() {
   const { flameLevel, blockTool } = useCanvasContext();
   const [canvas, setCanvas] = useState([]);
 
-  function handleHoverGrid({ x, y, z, isHovered }) {
+  function handleHoverGrid(x, y, z, { hover }) {
     setCanvas((prevCanvas) => {
       let newCanvas = [...prevCanvas];
       const maxX = Math.min(x + blockTool.size, newCanvas[y].length);
@@ -14,13 +14,38 @@ function Canvas() {
 
       if (blockTool.direction === "x") {
         for (let i = x; i < maxX; i++) {
-          newCanvas[y][i].isHovered = isHovered;
+          newCanvas[y][i].isHovered = hover;
         }
       } else if (blockTool.direction === "y") {
         for (let i = y; i < maxY; i++) {
-          newCanvas[i][x].isHovered = isHovered;
+          newCanvas[i][x].isHovered = hover;
         }
       }
+      return newCanvas;
+    });
+  }
+
+  function handleClickGrid(x, y, z, { fill }) {
+    setCanvas((prevCanvas) => {
+      let newCanvas = [...prevCanvas];
+      const fillStart = newCanvas[y][x];
+      const fillEndX = x + blockTool.size - 1;
+      const fillEndY = y + blockTool.size - 1;
+
+      if (blockTool.direction === "x" && fillEndX < newCanvas[y].length) {
+        for (let i = x; i <= fillEndX; i++) {
+          newCanvas[y][i].isOccupied = fill;
+        }
+        fillStart.isSnapPoint = fill;
+        newCanvas[y][fillEndX].isSnapPoint = fill;
+      } else if (blockTool.direction === "y" && fillEndY < newCanvas.length) {
+        for (let i = y; i <= fillEndY; i++) {
+          newCanvas[i][x].isOccupied = fill;
+        }
+        fillStart.isSnapPoint = fill;
+        newCanvas[fillEndY][x].isSnapPoint = fill;
+      }
+
       return newCanvas;
     });
   }
@@ -62,6 +87,7 @@ function Canvas() {
           isHovered={isHovered}
           handleMouseEnter={handleHoverGrid}
           handleMouseLeave={handleHoverGrid}
+          handleClick={handleClickGrid}
         />
       ))}
     </div>
