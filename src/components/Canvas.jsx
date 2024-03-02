@@ -8,7 +8,7 @@ function Canvas() {
 
   function handleHoverGrid(x, y, z, { hover }) {
     setCanvas((prevCanvas) => {
-      let newCanvas = [...prevCanvas];
+      const newCanvas = [...prevCanvas];
       const maxX = Math.min(x + blockTool.size, newCanvas[y].length);
       const maxY = Math.min(y + blockTool.size, newCanvas.length);
 
@@ -27,25 +27,49 @@ function Canvas() {
 
   function handleClickGrid(x, y, z, { fill }) {
     setCanvas((prevCanvas) => {
-      let newCanvas = [...prevCanvas];
+      const newCanvas = [...prevCanvas];
       const fillStart = newCanvas[y][x];
       const fillEndX = x + blockTool.size - 1;
       const fillEndY = y + blockTool.size - 1;
+      const canvasWidth = newCanvas[y].length;
+      const canvasLength = newCanvas.length;
+      let conflict = false;
 
-      if (blockTool.direction === "x" && fillEndX < newCanvas[y].length) {
+      if (blockTool.direction === "x" && fillEndX < canvasWidth) {
         for (let i = x; i <= fillEndX; i++) {
-          newCanvas[y][i].isOccupied = fill;
+          if (newCanvas[y][i].isOccupied) conflict = true;
         }
-        fillStart.isSnapPoint = fill;
-        newCanvas[y][fillEndX].isSnapPoint = fill;
-      } else if (blockTool.direction === "y" && fillEndY < newCanvas.length) {
+        if (
+          newCanvas[y][x].isSnapPoint &&
+          !newCanvas[y][x - 1].isOccupied &&
+          !newCanvas[y][x + 1].isOccupied
+        )
+          conflict = false;
+        if (!conflict) {
+          for (let i = x; i <= fillEndX; i++) {
+            newCanvas[y][i].isOccupied = fill;
+          }
+          fillStart.isSnapPoint = fill;
+          newCanvas[y][fillEndX].isSnapPoint = fill;
+        }
+      } else if (blockTool.direction === "y" && fillEndY < canvasLength) {
         for (let i = y; i <= fillEndY; i++) {
-          newCanvas[i][x].isOccupied = fill;
+          if (newCanvas[i][x].isOccupied) conflict = true;
         }
-        fillStart.isSnapPoint = fill;
-        newCanvas[fillEndY][x].isSnapPoint = fill;
+        if (
+          newCanvas[y][x].isSnapPoint &&
+          !newCanvas[y - 1][x].isOccupied &&
+          !newCanvas[y + 1][x].isOccupied
+        )
+          conflict = false;
+        if (!conflict) {
+          for (let i = y; i <= fillEndY; i++) {
+            newCanvas[i][x].isOccupied = fill;
+          }
+          fillStart.isSnapPoint = fill;
+          newCanvas[fillEndY][x].isSnapPoint = fill;
+        }
       }
-
       return newCanvas;
     });
   }
@@ -53,7 +77,7 @@ function Canvas() {
   useEffect(() => {
     (function drawCanvas() {
       const z = 0;
-      let newCanvas = [];
+      const newCanvas = [];
 
       for (let y = 0; y < flameLevel * 40; y++) {
         let row = [];
