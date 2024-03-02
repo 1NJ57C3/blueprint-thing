@@ -9,18 +9,27 @@ function Canvas() {
   function handleHoverGrid(x, y, z, { hover }) {
     setCanvas((prevCanvas) => {
       const newCanvas = [...prevCanvas];
-      const maxX = Math.min(x + blockTool.size, newCanvas[y].length);
-      const maxY = Math.min(y + blockTool.size, newCanvas.length);
+      const maxX = blockTool.direction === "x" ? Math.min(x + blockTool.size, newCanvas[y].length) : x + 1;
+      const maxY = blockTool.direction === "y" ? Math.min(y + blockTool.size, newCanvas.length) : y + 1;
+      const brushEndX = blockTool.direction === "x" ? x + blockTool.size : x;
+      const brushEndY = blockTool.direction === "y" ? y + blockTool.size : y;
+      let conflict = false;
 
-      if (blockTool.direction === "x") {
-        for (let i = x; i < maxX; i++) {
-          newCanvas[y][i].isHovered = hover;
-        }
-      } else if (blockTool.direction === "y") {
-        for (let i = y; i < maxY; i++) {
-          newCanvas[i][x].isHovered = hover;
+      function checkBrushOutOfBounds() {
+        if ((brushEndX > maxX ) || (brushEndY > maxY)) return conflict = true;
+      }
+
+      function applyHoverEffect() {
+        for (let j = y; j < maxY; j++) {
+          for (let i = x; i < maxX; i++) {
+            conflict ? newCanvas[j][i].hasConflict = hover : newCanvas[j][i].isHovered = hover;
+          }
         }
       }
+
+      checkBrushOutOfBounds();
+      applyHoverEffect();
+
       return newCanvas;
     });
   }
@@ -92,6 +101,7 @@ function Canvas() {
             isOccupied: false,
             isSnapPoint: false,
             isHovered: false,
+            hasConflict: false,
           });
         }
         newCanvas.push(row);
@@ -102,7 +112,7 @@ function Canvas() {
 
   const renderCanvas = canvas.map((row, i) => (
     <div key={"row" + i} className="canvas-row">
-      {row.map(({ x, y, z, isOccupied, isSnapPoint, isHovered }) => (
+      {row.map(({ x, y, z, isOccupied, isSnapPoint, isHovered, hasConflict }) => (
         <Grid
           key={"x" + x + "y" + y + "z" + z}
           x={x}
@@ -111,6 +121,7 @@ function Canvas() {
           isOccupied={isOccupied}
           isSnapPoint={isSnapPoint}
           isHovered={isHovered}
+          hasConflict={hasConflict}
           handleMouseEnter={handleHoverGrid}
           handleMouseLeave={handleHoverGrid}
           handleClick={handleFillGrid}

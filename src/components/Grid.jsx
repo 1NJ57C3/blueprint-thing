@@ -5,9 +5,10 @@ function Grid({
   isOccupied,
   isSnapPoint,
   isHovered,
+  hasConflict,
   handleMouseEnter,
   handleMouseLeave,
-  handleClick
+  handleClick,
 }) {
   function classNameHelper() {
     if (isHovered) {
@@ -18,6 +19,8 @@ function Grid({
       }
     } else if (isOccupied) {
       return " occupied";
+    } else if (hasConflict) {
+      return " conflict";
     } else {
       return "";
     }
@@ -26,16 +29,12 @@ function Grid({
   return (
     <div
       className={"grid" + classNameHelper()}
-      onMouseEnter={() =>
-        handleMouseEnter( x, y, z, { hover: true })
-      }
-      onMouseLeave={() =>
-        handleMouseLeave( x, y, z, { hover: false })
-      }
-      onClick={() => handleClick( x, y, z, { fill: true })}
-      onContextMenu={e => {
+      onMouseEnter={() => handleMouseEnter(x, y, z, { hover: true })}
+      onMouseLeave={() => handleMouseLeave(x, y, z, { hover: false })}
+      onClick={() => handleClick(x, y, z, { fill: true })}
+      onContextMenu={(e) => {
         e.preventDefault();
-        // new handler coming™
+        // new handler coming soon™
       }}
     />
   );
