@@ -25,51 +25,53 @@ function Canvas() {
     });
   }
 
-  function handleClickGrid(x, y, z, { fill }) {
+  function handleFillGrid(x, y, z, { fill }) {
     setCanvas((prevCanvas) => {
       const newCanvas = [...prevCanvas];
       const fillStart = newCanvas[y][x];
-      const fillEndX = x + blockTool.size - 1;
-      const fillEndY = y + blockTool.size - 1;
+      const fillEndX = blockTool.direction === "x" ? x + blockTool.size - 1 : x;
+      const fillEndY = blockTool.direction === "y" ? y + blockTool.size - 1 : y;
       const canvasWidth = newCanvas[y].length;
       const canvasLength = newCanvas.length;
       let conflict = false;
 
-      if (blockTool.direction === "x" && fillEndX < canvasWidth) {
-        for (let i = x; i <= fillEndX; i++) {
-          if (newCanvas[y][i].isOccupied) conflict = true;
-        }
-        if (
-          newCanvas[y][x].isSnapPoint &&
-          !newCanvas[y][x - 1].isOccupied &&
-          !newCanvas[y][x + 1].isOccupied
-        )
-          conflict = false;
-        if (!conflict) {
+      if (fillEndX >= canvasWidth || fillEndY >= canvasLength) return newCanvas;
+      const fillEnd = newCanvas[fillEndY][fillEndX];
+
+      function checkFillRangeOccupancy() {
+        for (let j = y; j <= fillEndY; j++) {
           for (let i = x; i <= fillEndX; i++) {
-            newCanvas[y][i].isOccupied = fill;
+            if (newCanvas[j][i].isOccupied) return (conflict = true);
           }
-          fillStart.isSnapPoint = fill;
-          newCanvas[y][fillEndX].isSnapPoint = fill;
-        }
-      } else if (blockTool.direction === "y" && fillEndY < canvasLength) {
-        for (let i = y; i <= fillEndY; i++) {
-          if (newCanvas[i][x].isOccupied) conflict = true;
-        }
-        if (
-          newCanvas[y][x].isSnapPoint &&
-          !newCanvas[y - 1][x].isOccupied &&
-          !newCanvas[y + 1][x].isOccupied
-        )
-          conflict = false;
-        if (!conflict) {
-          for (let i = y; i <= fillEndY; i++) {
-            newCanvas[i][x].isOccupied = fill;
-          }
-          fillStart.isSnapPoint = fill;
-          newCanvas[fillEndY][x].isSnapPoint = fill;
         }
       }
+
+      function allowPerpendicularLines() {
+        if (
+          (blockTool.direction === "x" &&
+            !newCanvas[y][x - 1]?.isOccupied &&
+            !newCanvas[y][x + 1].isOccupied) ||
+          (blockTool.direction === "y" &&
+            !newCanvas[y - 1]?.[x].isOccupied &&
+            !newCanvas[y + 1][x].isOccupied)
+        )
+          conflict = false;
+      }
+
+      function fillGrids() {
+        for (let j = y; j <= fillEndY; j++) {
+          for (let i = x; i <= fillEndX; i++) {
+            newCanvas[j][i].isOccupied = fill;
+          }
+        }
+        fillStart.isSnapPoint = fill;
+        fillEnd.isSnapPoint = fill;
+      }
+
+      checkFillRangeOccupancy();
+      if (fillStart.isSnapPoint) allowPerpendicularLines();
+      if (!conflict) fillGrids();
+
       return newCanvas;
     });
   }
@@ -111,7 +113,7 @@ function Canvas() {
           isHovered={isHovered}
           handleMouseEnter={handleHoverGrid}
           handleMouseLeave={handleHoverGrid}
-          handleClick={handleClickGrid}
+          handleClick={handleFillGrid}
         />
       ))}
     </div>

@@ -12,12 +12,12 @@ function Grid({
   function classNameHelper() {
     if (isHovered) {
       if (isOccupied) {
-        return "conflict";
+        return " conflict";
       } else {
-        return "hovered";
+        return " hovered";
       }
     } else if (isOccupied) {
-      return "occupied";
+      return " occupied";
     } else {
       return "";
     }
@@ -25,7 +25,7 @@ function Grid({
 
   return (
     <div
-      className={"grid " + classNameHelper()}
+      className={"grid" + classNameHelper()}
       onMouseEnter={() =>
         handleMouseEnter( x, y, z, { hover: true })
       }
@@ -35,7 +35,7 @@ function Grid({
       onClick={() => handleClick( x, y, z, { fill: true })}
       onContextMenu={e => {
         e.preventDefault();
-        handleClick( x, y, z, { fill: false });
+        // new handler coming™
       }}
     />
   );
